@@ -1,0 +1,28 @@
+#!/bin/bash
+#PBS -N build_openvla_cont
+#PBS -l select=1:ncpus=8:mem=64gb
+#PBS -l walltime=10:00:00
+#PBS -o logs/build_openvla_cont.out
+#PBS -e logs/build_openvla_cont.err
+
+# Move to working directory
+cd $PBS_O_WORKDIR
+
+# Login using token
+singularity remote login --tokenfile containers/sylabs_token
+
+# Define container paths
+DEF_FILE="containers/openvla_cont.def"
+SIF_FILE="containers/openvla_cont.sif"
+
+# Build the container remotely
+echo "Starting Singularity remote build process..."
+singularity build --remote $SIF_FILE $DEF_FILE
+
+# Check if the build was successful
+if [ -f "$SIF_FILE" ]; then
+    echo "Container build completed successfully: $SIF_FILE"
+else
+    echo "Container build failed. Check logs for details."
+    exit 1
+fi

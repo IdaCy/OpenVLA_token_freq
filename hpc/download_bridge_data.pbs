@@ -1,0 +1,11 @@
+#!/bin/bash
+#PBS -N download_bridge_data
+#PBS -l select=1:ncpus=4:mem=48gb
+#PBS -l walltime=10:00:00
+#PBS -o logs/download_bridge_data.out
+#PBS -e logs/download_bridge_data.err
+
+cd $PBS_O_WORKDIR
+
+# Run the script using the Singularity container
+singularity exec --nv containers/extract_activations.sif /opt/conda/bin/python scripts/download_bridge_data.py

@@ -1,47 +1,86 @@
-# VLA Tokenization Assessments
+# OpenVLA Forgetting and Tokenization Study
 
-We are currently focusing on mechanistic interpretability research analyzing how models trained with the FAST action tokenization scheme use different frequency components of action data. The goal is to gain insights into token representation efficiency, attention distribution, and generalization ability.
+## Overview
+This repository investigates catastrophic forgetting in the OpenVLA model, with a check on whether the FAST tokenization technique reduces forgetting compared to traditional binning-based tokenization methods.
 
-## **Key Features**
+We analyze how fine-tuning affects the model's latent space, activations, and attention distributions, aiming to provide concrete, quantifiable insights into knowledge retention and degradation.
 
-- **Frequency Band Analysis:** Investigate how OpenVLA processes low, mid, and high-frequency components of action data.
-- **Efficient Tokenization:** Evaluate the impact of the FAST tokenization scheme on generalization and efficiency.
-- **Attention Attribution:** Analyze attention distribution across frequency bands.
-- **Comparative Benchmarking:** Compare FAST tokenization against naive approaches to assess performance improvements.
-
-## **Project Structure**
+## Project Structure
 
 ```
-OpenVLA/
-│-- analyses/
-│-- datas/
-│-- results/
-│-- scripts/
-│-- README.md
+.
+├── analysis/
+├── data/
+│   ├── raw/
+├── scripts/
+├── hpc/
+├── container/
+├── README.md
 ```
 
----
+## Objectives
 
-### **Prerequisites**
+1. **Evaluate catastrophic forgetting:**
+   - Investigate if forgetting is observable in the model's latent space.
+   - Measure changes in activation and attention patterns pre- and post-fine-tuning.
 
-Required dependencies:
+2. **Compare FAST vs. Naive Binning Tokenization:**
+   - Assess if FAST tokenization mitigates forgetting.
+   - Compare performance stability between the two approaches.
+
+## Experimental Workflow
+
+### Phase 1: Binning Tokenization
+1. Run OpenVLA with the naive binning tokenization on a dataset (e.g., DROID, BridgeV2) and capture intermediate activations and attention values.
+2. Run OpenVLA on the same dataset to check for consistency in activation and attention values.
+3. Fine-tune the model using binning-based tokenization.
+4. Rerun inference and compare pre- and post-fine-tuning activations to detect signs of forgetting.
+
+### Phase 2: FAST Tokenization
+1. Run OpenVLA with the FAST tokenization and capture activations and attention values.
+2. Fine-tune the model using FAST tokenization.
+3. Rerun inference and compare pre- and post-fine-tuning activations and attention values to evaluate stability.
+
+## Evaluation Metrics
+
+- **Activation similarity:**
+  - Measure numerical distance using cosine similarity or Mean Squared Error (MSE).
+- **Attention divergence:**
+  - Compute KL divergence to track changes in attention distributions.
+- **Performance drop:**
+  - Evaluate action success rates and accuracy changes.
+- **Activation stability:**
+  - Lower differences should indicate better feature retention.
+- **Attention pattern shifts:**
+  - Analyze the consistency of attention focus across fine-tuning phases.
+
+## Datasets
+
+- **Conversational Skills Evaluation:**
+  - VQA v2 (Image-Question-Answer dataset)
+- **Fine-Tuning Dataset:**
+  - BridgeData V2 (Robotic demonstration dataset)
+
+## Setup Instructions
+
+1. Install dependencies:
+   ```
+   pip install -r requirements.txt
+   ```
+2. Download datasets and place them in `data/raw/`.
+3. Run experiments using scripts in `scripts/`, like:
+   ```
+   python scripts/run_experiment.py --tokenization binning
+   python scripts/run_experiment.py --tokenization FAST
+   ```
+
+## Running on HPC
 
 ```
-brew install python3 wget awscli gdown
-pip install numpy requests tqdm torch transformers
+qsub hpc/train_openvla.pbs
 ```
 
-### **Datasets**
 
-- **DROID Dataset:** Multi-task robot manipulation data.
-- **Libero Dataset:** Robotic benchmark dataset.
-- **Table Bussing Dataset:** High-frequency tasks.
-- **Laundry Folding Dataset:** Complex dexterous tasks.
-
-`scripts/download_data.sh` for automated downloads.
-
----
-
-## **Contact**
-
+## Contact
 ida.caspary24[at]imperial.ac.uk
+
