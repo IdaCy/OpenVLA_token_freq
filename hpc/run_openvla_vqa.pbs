@@ -1,0 +1,13 @@
+#!/bin/bash
+#PBS -N openvla_vqa
+#PBS -l select=1:ncpus=8:mem=64gb:ngpus=1
+#PBS -l walltime=10:00:00
+#PBS -o logs/openvla_vqa.out
+#PBS -e logs/openvla_vqa.err
+
+cd $PBS_O_WORKDIR
+
+#singularity exec --nv containers/extract_activations.sif python scripts/run_openvla_vqa.py
+singularity exec --nv -B ~/openvla:/workspace/openvla containers/extract_activations.sif \
+    python /workspace/openvla/scripts/run_openvla_vqa.py
+    
