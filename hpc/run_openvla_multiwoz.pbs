@@ -1,0 +1,10 @@
+#!/bin/bash
+#PBS -N run_openvla_multw
+#PBS -l select=1:ncpus=8:mem=64gb:ngpus=1
+#PBS -l walltime=10:00:00
+#PBS -o logs/run_openvla_multw.out
+#PBS -e logs/run_openvla_multw.err
+
+cd $PBS_O_WORKDIR
+
+singularity exec --nv containers/openvla_cont.sif /opt/conda/bin/python scripts/run_openvla_multw.py

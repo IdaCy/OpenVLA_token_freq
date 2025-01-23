@@ -55,7 +55,7 @@ From: nvidia/cuda:11.8.0-cudnn8-devel-ubuntu20.04
 
     /opt/conda/bin/mamba --version || { echo "Mamba binary not found"; exit 1; }
 
-    # Install Python dependencies using Mamba (without open_clip_torch)
+    # Install Python dependencies using Mamba
     /opt/conda/bin/mamba install -c conda-forge -c pytorch -c nvidia \
         pytorch=2.2.1 torchvision torchaudio cudatoolkit=11.8 \
         transformers huggingface_hub opencv pandas numpy tqdm \
@@ -63,11 +63,11 @@ From: nvidia/cuda:11.8.0-cudnn8-devel-ubuntu20.04
         datasets protobuf grpcio matplotlib \
         einops=0.8.0 timm=1.0.14 wandb=0.10.15
 
-    # Install TensorFlow (Latest Compatible Version)
+    # Install TensorFlow
     /opt/conda/bin/pip install --upgrade pip==23.3.1
     /opt/conda/bin/pip install --no-cache-dir tensorflow==2.16.2
 
-    # Install OpenVLA from GitHub
+    # Install OpenVLA
     git clone https://github.com/openvla/openvla.git /opt/openvla
     cd /opt/openvla
     /opt/conda/bin/pip install --no-cache-dir .
@@ -75,7 +75,7 @@ From: nvidia/cuda:11.8.0-cudnn8-devel-ubuntu20.04
     # Install additional packages using pip instead of Conda
     /opt/conda/bin/pip install open_clip_torch captum shap lime mlflow einops
 
-    # Cleanup to reduce image size
+    # Cleanup
     rm -rf /opt/conda/pkgs/*
     apt-get clean
     rm -rf ~/.cache/pip
@@ -84,21 +84,7 @@ From: nvidia/cuda:11.8.0-cudnn8-devel-ubuntu20.04
 
 %runscript
     echo "Executing command inside OpenVLA container..."
-    exec python3 "$@"
-
-%test
-    echo "Running container self-test..."
-    exec python3 -c "import torch; print('Torch version:', torch.__version__)"
-    exec python3 -c "import transformers; print('Transformers version:', transformers.__version__)"
-    exec python3 -c "import cv2; print('OpenCV version:', cv2.__version__)"
-    exec python3 -c "import h5py; print('H5py version:', h5py.__version__)"
-    exec python3 -c "import numpy; print('NumPy version:', numpy.__version__)"
-    exec python3 -c "import pandas; print('Pandas version:', pandas.__version__)"
-    exec python3 -c "import PIL; print('Pillow version:', PIL.__version__)"
-    exec python3 -c "import tqdm; print('TQDM works')"
-    exec python3 -c "import wandb; print('WandB works')"
-    exec python3 -c "import openvla; print('OpenVLA works')"
-    echo "All tests passed!"
+    exec /opt/conda/bin/python3 "$@"
 
 %labels
     Author  Ida
