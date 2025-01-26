@@ -1,0 +1,22 @@
+#!/bin/bash
+#PBS -N get-and-proc_openvla
+#PBS -l select=1:ncpus=4:mem=16gb
+#PBS -l walltime=00:30:00
+#PBS -o logs/get-and-proc_openvla.out
+#PBS -e logs/get-and-proc_openvla.err
+
+cd $PBS_O_WORKDIR
+
+# Load necessary modules if required (optional)
+# module load singularity
+
+echo "Starting OpenVLA download job..."
+
+# Run the download inside the Singularity container
+singularity exec --nv --bind $PWD:/workspace \
+  --env HF_HOME=$HF_HOME \
+  --env TRANSFORMERS_CACHE=$TRANSFORMERS_CACHE \
+  --env PYTHONPATH=$PYTHONPATH \
+  containers/openvla_cont.sif python /workspace/scripts/get-and-proc_openvla.py
+
+echo "Download job completed."

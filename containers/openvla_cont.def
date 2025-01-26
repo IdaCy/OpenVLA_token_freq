@@ -62,6 +62,9 @@ From: nvidia/cuda:11.8.0-cudnn8-devel-ubuntu20.04
         pillow h5py scipy scikit-learn tensorboard \
         datasets protobuf grpcio matplotlib \
         einops=0.8.0 timm=1.0.14 wandb=0.10.15
+    
+    # TESTING THIS HERE
+    /opt/conda/bin/pip install timm==0.9.10
 
     # Install TensorFlow
     /opt/conda/bin/pip install --upgrade pip==23.3.1

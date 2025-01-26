@@ -1,0 +1,17 @@
+#!/bin/bash
+#PBS -N download_natsgd_data
+#PBS -l select=1:ncpus=2:mem=16gb
+#PBS -l walltime=03:00:00
+#PBS -o logs/download_natsgd_data.out
+#PBS -e logs/download_natsgd_data.err
+
+cd $PBS_O_WORKDIR
+
+# Run the script using the Singularity container with environment variables set inside the container
+singularity exec --nv --cleanenv --overlay containers/overlay_2000_2.img containers/modern_cont.sif bash -c "
+    export PYTHONUSERBASE=$HOME/.local;
+    export PYTHONPATH=\$PYTHONUSERBASE/lib/python3.12/site-packages:\$PYTHONPATH;
+    export PATH=\$PYTHONUSERBASE/bin:\$PATH;
+    python3 -c 'import gdown, filelock, requests, tqdm, beautifulsoup4; print(\"All packages loaded successfully!\")';
+    python3 scripts/download_natsgd_data.py
+"

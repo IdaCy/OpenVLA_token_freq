@@ -1,0 +1,26 @@
+#!/bin/bash
+#PBS -N test_openvla_inference
+#PBS -l select=1:ncpus=4:ngpus=1:mem=32gb
+#PBS -l walltime=03:00:00
+#PBS -o logs/test_openvla_inference.out
+#PBS -e logs/test_openvla_inference.err
+
+cd $PBS_O_WORKDIR
+
+# Run the script using the Singularity container with environment variables set inside the container
+singularity exec --nv --cleanenv \
+    --overlay overlay_openvla.img \
+    --overlay overlay_openvla_fix.img \
+    --bind /rds/general/user/ifc24/home:/mnt \
+    --env TRANSFORMERS_CACHE=/mnt/cache/huggingface \
+    --env HF_HOME=/mnt/cache/huggingface \
+    --env TORCH_HOME=/mnt/cache/torch \
+    --env HF_DATASETS_CACHE=/mnt/cache/huggingface_datasets \
+    containers/modern_cont.sif bash -c "
+    export PYTHONUSERBASE=$HOME/.local;
+    export PYTHONPATH=/usr/local/lib/python3.12/dist-packages:\$PYTHONUSERBASE/lib/python3.12/site-packages:\$PYTHONPATH;
+    export PATH=\$PYTHONUSERBASE/bin:\$PATH;
+    python3 -c 'import torch, transformers, timm, numpy; print(\"All packages loaded successfully!\")' || exit 1;
+    python3 /mnt/OpenVLA-forget-tune/script.py
+"
+

@@ -1,0 +1,35 @@
+#!/bin/bash
+#PBS -N test_openvla_access
+#PBS -l select=1:ncpus=4:ngpus=1:mem=32gb
+#PBS -l walltime=00:30:00
+#PBS -o logs/test_openvla_access.out
+#PBS -e logs/test_openvla_access.err
+
+module load singularity
+
+cd $PBS_O_WORKDIR
+
+singularity exec --nv --bind /rds/general/user/ifc24/home:/mnt \
+    --env TRANSFORMERS_CACHE=/mnt/cache/huggingface \
+    --env HF_HOME=/mnt/cache/huggingface \
+    --env TORCH_HOME=/mnt/cache/torch \
+    --env HF_DATASETS_CACHE=/mnt/cache/huggingface_datasets \
+    containers/openvla_cont.sif python -c "
+import collections
+if not hasattr(collections, 'MutableSet'):
+    import collections.abc
+    collections.MutableSet = collections.abc.MutableSet
+
+from transformers import AutoModelForVision2Seq, AutoProcessor
+import torch
+
+model_path = '/mnt/OpenVLA-forget-tune/models_downl-modern-cont/openvla-7b/'
+print('Checking GPU availability...')
+print('CUDA available:', torch.cuda.is_available())
+
+print('Loading processor...')
+processor = AutoProcessor.from_pretrained(model_path, trust_remote_code=True)
+print('Loading model...')
+model = AutoModelForVision2Seq.from_pretrained(model_path, trust_remote_code=True).to('cpu')
+print('✅ Model loaded successfully!')
+"
