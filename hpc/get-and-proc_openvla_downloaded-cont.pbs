@@ -1,0 +1,16 @@
+
+
+
+singularity exec --nv containers/pytorch_22.04-py3.sif python scripts/get-and-proc_openvla.py
+# bind files to it:
+# or singularity exec --nv --bind /rds/general/user/ifc24/home/OpenVLA-forget-tune:/workspace containers/pytorch_22.04-py3.sif python /workspace/scripts/get-and-proc_openvla.py
+
+# install things that may be missing:
+# singularity exec --nv containers/pytorch_22.04-py3.sif pip install --user timm==0.9.10 transformers accelerate
+
+# use a virtualenv in cont:
+#singularity exec --nv containers/pytorch_22.04-py3.sif bash
+#python -m venv ~/myenv
+#source ~/myenv/bin/activate
+#pip install -r requirements.txt
+

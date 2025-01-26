@@ -4,25 +4,22 @@ From: nvidia/cuda:11.8.0-cudnn8-devel-ubuntu20.04
 %environment
     export LC_ALL=C.UTF-8
     export LANG=C.UTF-8
+    export DEBIAN_FRONTEND=noninteractive  
+    export WORKDIR="/workspace"
     export PATH="/opt/conda/bin:$PATH"
     export PYTHONPATH="/opt/conda/lib/python3.10/site-packages:$PYTHONPATH"
-    export CONDA_DEFAULT_ENV=base
-    export CONDA_PREFIX=/opt/conda
-    export CONDA_ENV_NAME="base"
     export TRANSFORMERS_CACHE="/opt/conda/.cache/huggingface"
     export HF_HOME="/opt/conda/.cache/huggingface"
     export TORCH_HOME="/opt/conda/.cache/torch"
     export MAMBA_ROOT_PREFIX="/opt/conda"
-    export PATH="$MAMBA_ROOT_PREFIX/bin:$PATH"
-    export DEBIAN_FRONTEND=noninteractive  
-    export WORKDIR="/workspace"
+    export LD_LIBRARY_PATH=/opt/conda/lib:$LD_LIBRARY_PATH
     mkdir -p $WORKDIR
     cd $WORKDIR
 
 %post
-    echo "Installing dependencies..."
+    echo "Setting up the container environment..."
 
-    export DEBIAN_FRONTEND=noninteractive
+    # Set timezone and locale
     ln -fs /usr/share/zoneinfo/Etc/UTC /etc/localtime
     echo "Etc/UTC" > /etc/timezone
 
@@ -34,49 +31,41 @@ From: nvidia/cuda:11.8.0-cudnn8-devel-ubuntu20.04
 
     dpkg-reconfigure -f noninteractive tzdata
 
-    # Install Miniconda and set up Conda
+    # Install Miniconda and set up Conda environment
     wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O /tmp/miniconda.sh
     bash /tmp/miniconda.sh -b -p /opt/conda
     rm /tmp/miniconda.sh
 
-    # Initialize Conda environment
+    # Initialize Conda and add it to PATH
     . /opt/conda/etc/profile.d/conda.sh
     echo ". /opt/conda/etc/profile.d/conda.sh" >> ~/.bashrc
     echo "conda activate base" >> ~/.bashrc
 
-    # Update base Python version
-    /opt/conda/bin/conda install -n base python=3.10 -y
+    # Install necessary packages with Conda
+    conda install -n base python=3.10 -y
+    conda install -n base -c conda-forge mamba -y
 
-    # Install Mamba
-    export MAMBA_ROOT_PREFIX="/opt/conda"
-    export PATH="$MAMBA_ROOT_PREFIX/bin:$PATH"
-    /opt/conda/bin/conda install -n base -c conda-forge mamba && \
-    echo "Mamba installed successfully" || { echo "Mamba installation failed"; exit 1; }
-
-    /opt/conda/bin/mamba --version || { echo "Mamba binary not found"; exit 1; }
-
-    # Install Python dependencies using Mamba
-    /opt/conda/bin/mamba install -c conda-forge -c pytorch -c nvidia \
+    # Use Mamba for faster dependency resolution
+    mamba install -n base -c conda-forge -c pytorch -c nvidia \
         pytorch=2.2.1 torchvision torchaudio cudatoolkit=11.8 \
         transformers huggingface_hub opencv pandas numpy tqdm \
         pillow h5py scipy scikit-learn tensorboard \
         datasets protobuf grpcio matplotlib \
-        einops=0.8.0 timm=1.0.14 wandb=0.10.15
-    
-    # TESTING THIS HERE
-    /opt/conda/bin/pip install timm==0.9.10
+        einops=0.8.0 timm=0.9.10 wandb=0.10.15 mkl \
+        mkl-include mkl-service accelerate
 
-    # Install TensorFlow
-    /opt/conda/bin/pip install --upgrade pip==23.3.1
-    /opt/conda/bin/pip install --no-cache-dir tensorflow==2.16.2
+    # Install additional dependencies using pip
+    pip install --upgrade pip==23.3.1
+    pip install tensorflow==2.13.1 open_clip_torch captum shap lime mlflow einops
+    pip install --upgrade typing-extensions sqlalchemy
 
-    # Install OpenVLA
+    # Install the closest available version of tensorflow-datasets
+    pip install tensorflow-datasets==4.9.2
+
+    # Clone and install OpenVLA
     git clone https://github.com/openvla/openvla.git /opt/openvla
     cd /opt/openvla
-    /opt/conda/bin/pip install --no-cache-dir .
-
-    # Install additional packages using pip instead of Conda
-    /opt/conda/bin/pip install open_clip_torch captum shap lime mlflow einops
+    pip install --no-cache-dir --no-deps .
 
     # Cleanup
     rm -rf /opt/conda/pkgs/*
@@ -92,4 +81,4 @@ From: nvidia/cuda:11.8.0-cudnn8-devel-ubuntu20.04
 %labels
     Author  Ida
     Version 1.0
-    Description "Singularity container for OpenVLA fine-tuning and analysis"
+    Description "Singularity container for OpenVLA model download and processing"

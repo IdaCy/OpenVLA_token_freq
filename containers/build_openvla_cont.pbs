@@ -17,7 +17,7 @@ SIF_FILE="containers/openvla_cont.sif"
 
 # Build the container remotely
 echo "Starting Singularity remote build process..."
-singularity build --remote $SIF_FILE $DEF_FILE
+singularity build --fakeroot $SIF_FILE $DEF_FILE
 
 # Check if the build was successful
 if [ -f "$SIF_FILE" ]; then

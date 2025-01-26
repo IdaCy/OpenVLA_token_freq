@@ -1,0 +1,28 @@
+#!/bin/bash
+#PBS -N modern_cont
+#PBS -l select=1:ncpus=4:mem=16gb
+#PBS -l walltime=02:00:00
+#PBS -o logs/modern_cont.out
+#PBS -e logs/modern_cont.err
+
+# Move to working directory
+cd $PBS_O_WORKDIR
+
+# Ensure the necessary directories exist
+mkdir -p logs containers containers/tmp
+
+# Move to the containers directory
+cd containers
+
+# Pull the NVIDIA PyTorch container
+singularity pull modern_cont.sif docker://nvcr.io/nvidia/pytorch:24.12-py3
+
+# Verify the downloaded container
+if [ -f "modern_cont.sif" ]; then
+    echo "✅ Container successfully downloaded."
+else
+    echo "❌ Container download failed."
+    exit 1
+fi
+
+echo "Container pull completed."

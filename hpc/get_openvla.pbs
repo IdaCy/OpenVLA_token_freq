@@ -1,0 +1,19 @@
+#!/bin/bash
+#PBS -N get_openvla
+#PBS -l select=1:ncpus=4:mem=64gb
+#PBS -l walltime=10:00:00
+#PBS -o logs/get_openvla.out
+#PBS -e logs/get_openvla.err
+
+cd $PBS_O_WORKDIR
+
+# Load necessary modules if required (optional)
+# module load singularity
+
+echo "Starting OpenVLA download job..."
+
+# Run the download inside the Singularity container
+singularity exec ~/OpenVLA-forget-tune/containers/extract_activations.sif \
+    python ~/OpenVLA-forget-tune/scripts/get_openvla.py
+
+echo "Download job completed."
