@@ -1,5 +1,6 @@
 import numpy as np
 
+
 # Load data file
 data_path = "/rds/general/user/ifc24/home/OpenVLA-forget-tune/data/raw-natsgd/data.npy"
 fields_path = "/rds/general/user/ifc24/home/OpenVLA-forget-tune/data/raw-natsgd/fields.npy"
