@@ -1,0 +1,13 @@
+#!/bin/bash
+#PBS -N build_openvla_cuda_cont
+#PBS -l select=1:ncpus=8:mem=64gb
+#PBS -l walltime=4:00:00
+#PBS -o logs/build_openvla_cuda_cont.out
+#PBS -e logs/build_openvla_cuda_cont.err
+
+# Move to working directory
+cd $PBS_O_WORKDIR
+
+#singularity build --fakeroot containers/openvla_cuda_cont.sif containers/openvla_cuda_cont.def
+singularity exec --fakeroot --unshare --net --pid \
+    singularity build containers/openvla_cuda_cont.sif containers/openvla_cuda_cont.def

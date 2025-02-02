@@ -1,35 +1,33 @@
 import torch
 from transformers import AutoModelForVision2Seq, AutoProcessor
 from PIL import Image
-
 import os
-os.environ['TRANSFORMERS_CACHE'] = '/mnt/cache/huggingface'
-os.environ['HF_HOME'] = '/mnt/cache/huggingface'
-os.environ['TORCH_HOME'] = '/mnt/cache/torch'
-os.environ['HF_DATASETS_CACHE'] = '/mnt/cache/huggingface_datasets'
 
-model_path = '/mnt/OpenVLA-forget-tune/models_downl-modern-cont/openvla-7b/'
-processor = AutoProcessor.from_pretrained(model_path, trust_remote_code=True)
-model = AutoModelForVision2Seq.from_pretrained(model_path, trust_remote_code=True)
-print('Model loaded successfully!')
+# Define full paths instead of using '~'
+BASE_PATH = "/rds/general/user/ifc24/home/OpenVLA-forget-tune"
+CACHE_PATH = os.path.join(BASE_PATH, "models/openvla-7b/cache")
+MODEL_PATH = os.path.join(BASE_PATH, "models/openvla-7b")
+IMAGE_PATH = os.path.join(BASE_PATH, "data/images/cat.jpg")
 
-# Set model directory path
-model_path = "/rds/general/user/ifc24/home/OpenVLA-forget-tune/models_downl-modern-cont/openvla-7b/"
+# Set environment variables for cache locations
+os.environ['TRANSFORMERS_CACHE'] = os.path.join(CACHE_PATH, "huggingface")
+os.environ['HF_HOME'] = os.path.join(CACHE_PATH, "huggingface")
+os.environ['TORCH_HOME'] = os.path.join(CACHE_PATH, "torch")
+os.environ['HF_DATASETS_CACHE'] = os.path.join(CACHE_PATH, "huggingface_datasets")
 
 # Load processor and model
 try:
     print("Loading processor and model...")
-    processor = AutoProcessor.from_pretrained(model_path, trust_remote_code=True)
+    processor = AutoProcessor.from_pretrained(MODEL_PATH, trust_remote_code=True)
     model = AutoModelForVision2Seq.from_pretrained(
-        model_path,
+        MODEL_PATH,
         torch_dtype=torch.bfloat16,  # Use BF16 to reduce memory
         low_cpu_mem_usage=True,
         trust_remote_code=True
     ).to("cuda" if torch.cuda.is_available() else "cpu")
 
-    # Load a sample image (replace with actual image path)
-    image_path = "/rds/general/user/ifc24/home/sample_image.jpg"
-    image = Image.open(image_path)
+    # Load a sample image
+    image = Image.open(IMAGE_PATH)
 
     # Define a test prompt
     prompt = "Describe this image."
