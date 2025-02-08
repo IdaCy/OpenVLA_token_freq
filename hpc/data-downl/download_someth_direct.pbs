@@ -1,0 +1,21 @@
+#!/bin/bash
+#PBS -N download_someth
+#PBS -l select=1:ncpus=4:mem=32gb
+#PBS -l walltime=04:00:00
+#PBS -o logs/download_someth.out
+#PBS -e logs/download_someth.err
+
+# Move to the working directory
+cd $PBS_O_WORKDIR
+
+# Create the download directory if it doesn't exist
+mkdir -p data/raw-someth
+
+echo "Starting Something-Something V2 download..."
+
+# Download dataset parts
+wget -P data/raw-someth "https://apigwx-aws.qualcomm.com/qsc/public/v1/api/download/software/dataset/AIDataset/Something-Something-V2/20bn-something-something-v2-00"
+wget -P data/raw-someth "https://apigwx-aws.qualcomm.com/qsc/public/v1/api/download/software/dataset/AIDataset/Something-Something-V2/20bn-something-something-v2-01"
+wget -P data/raw-someth "https://softwarecenter.qualcomm.com/api/download/software/dataset/AIDataset/Something-Something-V2/20bn-something-something-download-package-labels.zip"
+
+echo "Download completed!"

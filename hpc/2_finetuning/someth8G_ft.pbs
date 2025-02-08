@@ -1,0 +1,26 @@
+#!/bin/bash
+#PBS -N openvla_finetune
+#PBS -l select=1:ncpus=32:ngpus=4:mem=128gb
+#PBS -l walltime=24:00:00
+#PBS -o logs/openvla_finetune.out
+#PBS -e logs/openvla_finetune.err
+
+cd $PBS_O_WORKDIR
+
+echo "Starting OpenVLA fine-tuning on HPC..."
+
+# Load required modules (if necessary)
+module load cuda/11.8  # Adjust based on HPC setup
+
+# Run fine-tuning inside Singularity container
+singularity exec --nv --writable-tmpfs containers/ctopenvla.sif \
+    torchrun --standalone --nnodes 1 --nproc-per-node 4 scripts/2-finetuning/someth8G_ft.py \
+        --data_root_dir datasets/open-x-embodiment \
+        --dataset_name somethv2 \
+        --run_root_dir runs/somethv2_ft_logs \
+        --batch_size 16 \
+        --max_steps 200000 \
+        --learning_rate 5e-4 \
+        --use_lora True
+
+echo "Fine-tuning job completed."

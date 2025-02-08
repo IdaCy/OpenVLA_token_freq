@@ -1,0 +1,37 @@
+
+#!/bin/bash
+#PBS -N someth-select40k
+#PBS -q v1_medium72a
+#PBS -l select=1:ncpus=8:mem=16GB
+#PBS -l walltime=01:00:00
+#PBS -o logs/someth-select40k.out
+#PBS -e logs/someth-select40k.err
+
+# Load Conda environment
+source ~/anaconda3/etc/profile.d/conda.sh
+conda activate hpcenv
+
+cd $PBS_O_WORKDIR
+
+python scripts/someth-select40k.py
+
+
+
+
+
+
+
+#!/bin/bash
+#PBS -N someth-select40k
+#PBS -l select=1:ncpus=8:mem=16GB
+#PBS -l walltime=03:00:00
+#PBS -o logs/someth-select40k.out
+#PBS -e logs/someth-select40k.err
+
+# Load Conda environment
+source ~/anaconda3/etc/profile.d/conda.sh
+conda activate hpcenv
+
+cd $PBS_O_WORKDIR
+
+python scripts/someth-select40k.py

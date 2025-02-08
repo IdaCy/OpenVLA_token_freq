@@ -1,0 +1,20 @@
+#!/bin/bash
+#PBS -N prep_someth8G
+#PBS -l select=1:ncpus=16:mem=128gb
+#PBS -l walltime=06:00:00
+#PBS -o logs/prep_someth8G.out
+#PBS -e logs/prep_someth8G.err
+
+# Load Conda environment in PBS
+source /rds/general/user/ifc24/home/anaconda3/etc/profile.d/conda.sh
+conda activate hpcenv
+
+cd $PBS_O_WORKDIR
+
+echo "Starting..."
+
+singularity exec --nv --overlay containers/overlays/openvla_overlay.ext3:rw \
+    --env LD_LIBRARY_PATH=/usr/local/lib:/usr/lib \
+    containers/ctopenvla.sif python scripts/2_finetuning/prep_someth8G.py
+
+echo "Completed."

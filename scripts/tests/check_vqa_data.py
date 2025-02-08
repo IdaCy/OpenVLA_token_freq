@@ -2,9 +2,9 @@ import json
 import os
 
 # Paths to subset files
-questions_path = "data/raw-vqa/subset_questions.json"
-answers_path = "data/raw-vqa/subset_answers.json"
-images_dir = "data/raw-vqa/train2014"
+questions_path = "data/raw-vqa500/subset_questions.json"
+answers_path = "data/raw-vqa500/subset_answers.json"
+images_dir = "data/raw-vqa500/train2014"
 
 # Check JSON file contents
 with open(questions_path, 'r') as q_file, open(answers_path, 'r') as a_file:

@@ -45,22 +45,32 @@ def download_file(url, output_path):
             time.sleep(10)
 
 
-def extract_subset(zip_path, target_folder, subset_count):
-    """Extract a subset of images from the ZIP archive."""
-    print(f"Extracting {subset_count} images from {zip_path}...")
+def extract_vqa_images(zip_path, target_folder, question_file):
+    """Extract only the images referenced in the VQA V2 questions file."""
+    print(f"Extracting VQA-specific images from {zip_path}...")
+
+    # Load VQA question file to find required image IDs
+    with open(question_file, 'r') as f:
+        vqa_questions = json.load(f)["questions"]
+
+    # Get unique image IDs from the questions
+    required_image_ids = {q["image_id"] for q in vqa_questions}
+    print(f"Found {len(required_image_ids)} unique VQA image IDs.")
+
+    # Map image IDs to COCO filenames
+    required_filenames = {f"COCO_train2014_{img_id:012d}.jpg" for img_id in required_image_ids}
+
+    # Extract only necessary images
     with zipfile.ZipFile(zip_path, "r") as zip_ref:
-        image_files = [f for f in zip_ref.namelist() if f.endswith(".jpg")]
-        
-        if len(image_files) < subset_count:
-            raise ValueError(f"ZIP archive contains only {len(image_files)} images, "
-                             f"but {subset_count} were requested.")
-
         os.makedirs(target_folder, exist_ok=True)
-        for i, file in enumerate(image_files[:subset_count]):
-            zip_ref.extract(file, target_folder)
-            print(f"Extracted {i + 1}/{subset_count}: {file}")
+        for filename in required_filenames:
+            try:
+                zip_ref.extract(filename, target_folder)
+                print(f"Extracted: {filename}")
+            except KeyError:
+                print(f"WARNING: Missing {filename} in ZIP!")
 
-    print(f"Extracted {subset_count} images to {target_folder}")
+    print(f"Extracted {len(required_filenames)} images to {target_folder}")
 
 
 def extract_questions_and_answers(question_zip, answer_zip, subset_count):
@@ -94,7 +104,12 @@ def main():
     download_file(VQA_URLS["annotations_train"], os.path.join(DOWNLOAD_DIR, "vqa_annotations_train.zip"))
 
     # Extract images and questions/answers
-    extract_subset(os.path.join(DOWNLOAD_DIR, "train2014.zip"), os.path.join(DOWNLOAD_DIR, "train2014"), REQUIRED_IMAGE_COUNT)
+    extract_vqa_images(
+        os.path.join(DOWNLOAD_DIR, "train2014.zip"), 
+        os.path.join(DOWNLOAD_DIR, "train2014"),
+        os.path.join(DOWNLOAD_DIR, "v2_OpenEnded_mscoco_train2014_questions.json")
+    )
+
     extract_questions_and_answers(
         os.path.join(DOWNLOAD_DIR, "vqa_questions_train.zip"),
         os.path.join(DOWNLOAD_DIR, "vqa_annotations_train.zip"),

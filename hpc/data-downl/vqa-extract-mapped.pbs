@@ -1,0 +1,11 @@
+#!/bin/bash
+#PBS -N vqa-extract-mapped
+#PBS -l select=1:ncpus=4:mem=16gb
+#PBS -l walltime=02:00:00
+#PBS -o logs/vqa-extract-mapped.out
+#PBS -e logs/vqa-extract-mapped.err
+
+cd $PBS_O_WORKDIR
+
+# Run the script
+python scripts/vqa-extract-mapped.py

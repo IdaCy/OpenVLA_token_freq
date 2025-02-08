@@ -1,0 +1,15 @@
+#!/bin/bash
+#PBS -N test_openvla_tokenizers
+#PBS -l select=1:ncpus=4:mem=16gb
+#PBS -l walltime=00:10:00
+#PBS -o logs/test_openvla_tokenizers.out
+#PBS -e logs/test_openvla_tokenizers.err
+
+cd $PBS_O_WORKDIR
+
+echo "Starting..."
+
+singularity exec --nv --writable-tmpfs containers/ctopenvla.sif \
+    python scripts/test_openvla_tokenizers.py
+
+echo "Job completed."

@@ -1,0 +1,14 @@
+#!/bin/bash
+#PBS -N someth-extract
+#PBS -l select=1:ncpus=8:mem=32gb
+#PBS -l walltime=04:00:00
+#PBS -o logs/someth-extract.out
+#PBS -e logs/someth-extract.err
+
+# Move to the working directory
+cd $PBS_O_WORKDIR
+
+# Run extraction script with nohup to ensure it keeps running
+python scripts/someth-extract.py
+
+echo "Extraction job submitted successfully!"
