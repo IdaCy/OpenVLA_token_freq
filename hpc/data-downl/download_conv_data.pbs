@@ -1,0 +1,11 @@
+#!/bin/bash
+#PBS -N download_conv_data
+#PBS -l select=1:ncpus=1:mem=8gb
+#PBS -l walltime=00:10:00
+#PBS -o logs/download_conv_data.out
+#PBS -e logs/download_conv_data.err
+
+cd $PBS_O_WORKDIR
+
+# Run the script
+python scripts/download_conv_data.py

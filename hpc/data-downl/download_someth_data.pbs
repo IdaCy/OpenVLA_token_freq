@@ -1,0 +1,20 @@
+#!/bin/bash
+#PBS -N download_someth_data
+#PBS -l select=1:ncpus=4:mem=48gb
+#PBS -l walltime=02:00:00
+#PBS -o logs/download_someth_data.out
+#PBS -e logs/download_someth_data.err
+
+# Load Conda environment in PBS
+source /rds/general/user/ifc24/home/anaconda3/etc/profile.d/conda.sh
+conda activate hpcenv
+
+# Move to the working directory
+cd $PBS_O_WORKDIR
+
+echo "Starting Something-Something V2 download..."
+
+# Run your Python script inside the activated environment
+python scripts/download_someth_data.py
+
+echo "Job completed."

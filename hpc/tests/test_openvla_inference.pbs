@@ -1,0 +1,16 @@
+#!/bin/bash
+#PBS -N test_openvla_inference
+#PBS -l select=1:ncpus=8:ngpus=1:mem=32gb
+#PBS -l walltime=04:00:00
+#PBS -o logs/test_openvla_inference.out
+#PBS -e logs/test_openvla_inference.err
+
+cd $PBS_O_WORKDIR
+
+echo "Starting OpenVLA inference..."
+
+singularity exec --nv --writable-tmpfs containers/ctopenvla.sif \
+    python scripts/test_safetensors.py
+
+
+echo "Inference job completed."

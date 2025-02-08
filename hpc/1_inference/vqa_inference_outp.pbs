@@ -1,0 +1,15 @@
+#!/bin/bash
+#PBS -N coco_inference_outp
+#PBS -l select=1:ncpus=8:ngpus=1:mem=64gb
+#PBS -l walltime=08:00:00
+#PBS -o logs/coco_inference_outp.out
+#PBS -e logs/coco_inference_outp.err
+
+cd $PBS_O_WORKDIR
+
+echo "Starting OpenVLA inference on VQA with predictions..."
+
+singularity exec --nv --writable-tmpfs containers/ctopenvla.sif \
+    python scripts/stage1/coco_inference_outp.py
+
+echo "Inference job completed."
