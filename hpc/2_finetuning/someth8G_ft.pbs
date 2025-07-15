@@ -9,15 +9,13 @@ cd $PBS_O_WORKDIR
 
 echo "Starting OpenVLA fine-tuning on HPC..."
 
-# Load required modules (if necessary)
-module load cuda/11.8  # Adjust based on HPC setup
-
 # Run fine-tuning inside Singularity container
 singularity exec --nv --writable-tmpfs containers/ctopenvla.sif \
-    torchrun --standalone --nnodes 1 --nproc-per-node 4 scripts/2-finetuning/someth8G_ft.py \
-        --data_root_dir datasets/open-x-embodiment \
-        --dataset_name somethv2 \
-        --run_root_dir runs/somethv2_ft_logs \
+    torchrun --standalone --nnodes 1 --nproc-per-node 4 scripts/2_finetuning/someth8G_ft.py \
+        --data_root_dir data \
+        --dataset_name somethv2_rlds \
+        --run_root_dir finetunes/somethv2_ft_logs \
+        --adapter_tmp_dir finetunes/adapter_weights \
         --batch_size 16 \
         --max_steps 200000 \
         --learning_rate 5e-4 \

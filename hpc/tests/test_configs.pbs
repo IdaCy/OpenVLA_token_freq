@@ -1,0 +1,15 @@
+#!/bin/bash
+#PBS -N test_configs
+#PBS -l select=1:ncpus=2:mem=4gb
+#PBS -l walltime=00:15:00
+#PBS -o logs/test_configs.out
+#PBS -e logs/test_configs.err
+
+cd $PBS_O_WORKDIR
+
+echo "Starting minimal dataset test..."
+
+# Run the minimal test script
+python test_configs.py
+
+echo "Minimal dataset test completed."
